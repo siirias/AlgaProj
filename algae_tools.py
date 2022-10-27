@@ -17,8 +17,12 @@ def format_query(product_name, product_args=[],parameters=[]):
     grid_type = 'latlon'  #so far, no others supported
     if(not any([i.startswith('bbox') for i in product_args])): #there is no boundig box defined
         product_args.append(default_bounding_box)
-
-    query={'product_name':product_name, 'product_args':product_args, 'grid_type':grid_type}
+    if(len(parameters)>0):
+        product_args.append("parameters="+",".join(parameters))
+    query={ 'product_name':product_name,\
+            'product_args':product_args, \
+            'grid_type':grid_type,\
+            'parameters':[]}
     return query
 
 product_args = ["bbox=16,59,30,66"]
@@ -63,9 +67,14 @@ def fetch_data(d_q):
         parameters = last_data.data[min(time_axis)][min(layers)].keys()
     for var in parameters:
         the_unit = last_data.data[min(time_axis)][min(layers)][var]['units']
-        print("Processing:  ({}), size = {}".format(var, \
+        print("Processing: {} ({}), size = {}".format(var, \
                 the_unit, \
                 last_data.data[min(time_axis)][min(layers)][var]['data'].shape))
+        print("\ttimesteps: {} from:{} to {}".format(\
+                len(time_axis),
+                min(time_axis),
+                max(time_axis)
+                ))
         new_var = []
         for t in time_axis:
             data = last_data.data[t]
