@@ -1,0 +1,5 @@
+{
+'oper_dir':'/mnt/c/Data/alga_test/',
+'output_di':'/mnt/c/Data/alga_test/',
+'script_dir':'/mnt/c/Data/Sorsat/Alga/AlgaProj'
+}
