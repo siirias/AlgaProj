@@ -8,7 +8,8 @@ import algae_tools as agt
 conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
 oper_dir = conf_dat['oper_dir']
 savefile_name = "meteor_data.nc"
-product_name = "fmi::forecast::harmonie::surface::grid"
+product_name = "ecmwf::forecast::surface::grid"
+#product_name = "fmi::forecast::harmonie::surface::grid"
 """
 List of available products: https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=describeStoredQueries
 
@@ -18,9 +19,21 @@ Products that might be useful:
     fmi::forecast::hbm::grid
     fmi::forecast::wam::grid
 
-"""
-the_query = agt.format_query(product_name)
-data_xr = agt.fetch_data(the_query)
+Parameters in ecmwf:
+    "Pressure","GeopHeight","Temperature","DewPoint","Humidity","WindDirection",
+    "WindSpeedMS","WindUMS","WindVMS","PrecipitationAmount","TotalCloudCover",
+    "LowCloudCover","MediumCloudCover","HighCloudCover","RadiationGlobal",
+    "RadiationGlobalAccumulation","RadiationNetSurfaceLWAccumulation",
+    "RadiationNetSurfaceSWAccumulation"," RadiationSWAccumulation","Visibility",
+    "WindGust","Cape"
 
+"""
+parameters =["Temperature","WindDirection","WindSpeedMS","WindUMS","WindVMS","RadiationGlobal"]
+data_xr_list = []
+for p in parameters:
+    the_query = agt.format_query(product_name, in_parameters = [p])
+    data_xr_list.append(agt.fetch_data(the_query))
+
+data_xr = xr.merge(data_xr_list)
 data_xr.to_netcdf(oper_dir + savefile_name, 'w')
 print("Saved: {}".format(oper_dir + savefile_name))

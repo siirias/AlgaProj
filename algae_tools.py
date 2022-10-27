@@ -13,26 +13,18 @@ Currently in:
 """
 default_bounding_box = "bbox=16,59,30,66"
 
-def format_query(product_name, product_args=[],parameters=[]):
+def format_query(in_product_name, in_product_args=[], in_parameters=[]):
     grid_type = 'latlon'  #so far, no others supported
-    if(not any([i.startswith('bbox') for i in product_args])): #there is no boundig box defined
-        product_args.append(default_bounding_box)
+    if(not any([i.startswith('bbox') for i in in_product_args])): #there is no boundig box defined
+        in_product_args.append(default_bounding_box)
     if(len(parameters)>0):
-        product_args.append("parameters="+",".join(parameters))
-    query={ 'product_name':product_name,\
-            'product_args':product_args, \
+        in_product_args.append("parameters="+",".join(in_parameters))
+    query={ 'product_name':in_product_name,\
+            'product_args':in_product_args, \
             'grid_type':grid_type,\
             'parameters':[]}
     return query
 
-product_args = ["bbox=16,59,30,66"]
-#product_args = ["bbox=18,59,20,60"]
-parameters = [  'Time-integrated surface direct short wave radiation', \
-                'Surface net solar radiation', \
-                ]
-
-grid_type = 'latlon'    # latlon means we can store just first lat-lon rows.
-                        # Anything else means the whole grid must be saved
 def fetch_data(d_q):
     #d_q is data_query, a dictionary got from format_query().
     parameters = d_q['parameters']
