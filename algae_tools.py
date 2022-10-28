@@ -17,7 +17,7 @@ def format_query(in_product_name, in_product_args=[], in_parameters=[]):
     grid_type = 'latlon'  #so far, no others supported
     if(not any([i.startswith('bbox') for i in in_product_args])): #there is no boundig box defined
         in_product_args.append(default_bounding_box)
-    if(len(parameters)>0):
+    if(len(in_parameters)>0):
         in_product_args.append("parameters="+",".join(in_parameters))
     query={ 'product_name':in_product_name,\
             'product_args':in_product_args, \
