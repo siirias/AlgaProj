@@ -31,7 +31,7 @@ Parameters in ecmwf:
 parameters =["Temperature","WindDirection","WindSpeedMS","WindUMS","WindVMS","RadiationGlobal"]
 data_xr_list = []
 for p in parameters:
-    the_query = agt.format_query(product_name, in_parameters = [p])
+    the_query = agt.format_query(product_name, [], in_parameters = [p])
     data_xr_list.append(agt.fetch_data(the_query))
 
 data_xr = xr.merge(data_xr_list)
