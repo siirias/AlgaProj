@@ -13,9 +13,9 @@ Currently in:
 """
 default_bounding_box = "bbox=16,59,30,66"
 
-def format_query(in_product_name, in_product_args=[], in_parameters=[]):
+def format_query(in_product_name, in_product_args=[], in_parameters=[],*, no_params=False):
     grid_type = 'latlon'  #so far, no others supported
-    if(not any([i.startswith('bbox') for i in in_product_args])): #there is no boundig box defined
+    if(not no_params and not any([i.startswith('bbox') for i in in_product_args])): #there is no boundig box defined
         in_product_args.append(default_bounding_box)
     if(len(in_parameters)>0):
         in_product_args.append("parameters="+",".join(in_parameters))
