@@ -28,7 +28,7 @@ Parameters in ecmwf:
     "WindGust","Cape"
 
 Parameters in hbm/hydrodyn
-"TemperatureSea", "Salinity", "SeaWaterVelocityU", "SeaWaterVelocityV"
+"TemperatureSea", "Salinity", "CurrentSpeed", "CurrentDirection", "SeaWaterVelocityW", #"SeaWaterVelocityU", "SeaWaterVelocityV"
 
 parameters in wam
 "SigWaveHeight", "SigWavePeriod", "WaveDirection"
@@ -39,7 +39,7 @@ parameters in wam
 the_query={}
 
 #parameters =["TemperatureSea","Salinity","SeaWaterVelocityU","SeaWaterVelocityV"]
-parameters =["SeaWaterVelocityU","SeaWaterVelocityV"]
+parameters =["TemperatureSea", "Salinity", "CurrentSpeed", "CurrentDirection"]
 data_xr_list = []
 for p in parameters:
     the_query = agt.format_query(product_name, [], in_parameters = [p])
