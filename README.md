@@ -16,6 +16,8 @@ Pieces in this package will consist of:
 REQUIREMENTS SO FAR:
 channels:
  - conda-forge
+ 
+ 
 dependencies:
 - numpy
 - pandas
