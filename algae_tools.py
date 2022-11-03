@@ -11,12 +11,21 @@ Currently in:
     fetch_data(DataQuery): Fetches data from fmi opendata system, and returns xarray Dataset 
                             that can be saved as netCDF
 """
-default_bounding_box = "bbox=16,59,30,66"
+class ModelArea:
+    def __init__(self):
+        self.lat_max = 66.0
+        self.lat_min = 59.0
+        self.lon_max = 30.0
+        self.lon_min = 16.0
+    def bb(self):
+        return 'bbox={},{},{},{}'.format(self.lon_min,self.lat_min,self.lon_max,self.lat_max)
+default_area = ModelArea()
+
 
 def format_query(in_product_name, in_product_args=[], in_parameters=[],*, no_params=False):
     grid_type = 'latlon'  #so far, no others supported
     if(not no_params and not any([i.startswith('bbox') for i in in_product_args])): #there is no boundig box defined
-        in_product_args.append(default_bounding_box)
+        in_product_args.append(default_area.bb())
     if(len(in_parameters)>0):
         in_product_args.append("parameters="+",".join(in_parameters))
     query={ 'product_name':in_product_name,\
