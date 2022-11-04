@@ -1,3 +1,9 @@
+#% Create a copy of this file under name config.txt
+#% Modify the paths and logins/passwords in the copy to
+#% fit in your environment. You can remove these comments.
+#% Do not put that copy ever into any repository!
+#%
+
 {
 'oper_dir':'/mnt/c/Data/alga_test/',
 'output_di':'/mnt/c/Data/alga_test/',
