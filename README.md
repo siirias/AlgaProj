@@ -3,7 +3,7 @@ ROUGH PLAN:
 
 Will need as input at least:
 	surface-layer currents for the period of forecast
-	model fielsds for sun/wind/mixing
+	model fields for sun/wind/mixing
 	in-situ/satellite measurements of current algae status
 
 Pieces in this package will consist of:
@@ -14,6 +14,10 @@ Pieces in this package will consist of:
 
 
 REQUIREMENTS SO FAR:
+
+ - wget  for aquiring satellite
+ - scp   for aquiring ship data
+
 channels:
  - conda-forge
  
@@ -25,5 +29,6 @@ dependencies:
 - scipy
 - netcdf4
 
+- rasterio for satellite data downloading
 - motu client for bgc data loading: https://help.marine.copernicus.eu/en/articles/4796533-what-are-the-motu-client-motuclient-and-python-requirements
 
