@@ -15,6 +15,7 @@ oper_dir = conf_dat['oper_dir']
 tiff_file_name = "satellite_tmp.tiff"
 savefile_name = "satellite_data.nc"
 algae_max_value = 4.0 # This depends on selected dataset.
+algae_min_value = 1.0 # as zeroes mark masked values.
 """
 Example:
 https://geoserver2.ymparisto.fi/geoserver/eo/wcs
@@ -33,7 +34,7 @@ target_area = '&SUBSET=Lat({},{})&SUBSET=Long({},{})'.\
 target_day = '&SUBSET=time("{}")'.\
         format(dt.datetime.strftime(dt.datetime.today(), "%Y-%m-%dT00:00:00Z"))
 
-#target_day = '&SUBSET=time("2022-08-02T00:00:00Z")'
+target_day = '&SUBSET=time("2022-08-02T00:00:00Z")'
 wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&request=GetCoverage&coverageId=eo:EO_MR_OLCI_ALGAE&format=image/tiff{}{}'".format(target_area,target_day)
 
 fetch_command = "wget {} -O {}".format(wmo_request, oper_dir+tiff_file_name)
@@ -41,7 +42,10 @@ os.system(fetch_command)
 sat_database = {}
 with rasterio.open(oper_dir+tiff_file_name) as sat_dat:
     mask = sat_dat.dataset_mask()
-    algae = np.array(sat_dat.read(), dtype=float)/algae_max_value
+    algae = sat_dat.read() # for the moment, values 0-4 0 should be same as 1
+    algae[algae==0] = 1
+    algae = algae-1
+    algae = np.array(algae, dtype=float)/(algae_max_value-algae_min_value)
     algae = algae.reshape(mask.shape) #this, to get rid possible extrra dimensions
     sat_database['algae'] = xr.DataArray(algae, dims = ['lat','lon'])
     sat_database['mask'] = xr.DataArray(mask, dims = ['lat','lon'])

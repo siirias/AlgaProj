@@ -31,4 +31,4 @@ dependencies:
 
 - rasterio for satellite data downloading
 - motu client for bgc data loading: https://help.marine.copernicus.eu/en/articles/4796533-what-are-the-motu-client-motuclient-and-python-requirements
-
+- imageio for writing figures with the test functions
