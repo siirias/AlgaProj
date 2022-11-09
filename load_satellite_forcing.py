@@ -10,7 +10,7 @@ import os
 import numpy as np
 
 
-conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
+conf_dat = agt.conf_dat 
 oper_dir = conf_dat['oper_dir']
 tiff_file_name = "satellite_tmp.tiff"
 savefile_name = "satellite_data.nc"
@@ -26,6 +26,11 @@ https://geoserver2.ymparisto.fi/geoserver/eo/wcs
 &format=image/tiff
 &SUBSET=time("2022-07-20T00:00:00Z")
 """
+#products: 
+## MER_FSG_L3_rp2017_chla  a-chlorofylli, tätä vaan vuoteen 2011
+## EO_MR_OLCI_ALGAE Pintalevätulkinta (60 m)
+#target_product = "EO_MR_OLCI_ALGAE"
+target_product = "EO_MR_OLCI_ALGAE"
 target_area = '&SUBSET=Lat({},{})&SUBSET=Long({},{})'.\
         format( agt.default_area.lat_min,\
                 agt.default_area.lat_max,\
@@ -35,7 +40,7 @@ target_day = '&SUBSET=time("{}")'.\
         format(dt.datetime.strftime(dt.datetime.today(), "%Y-%m-%dT00:00:00Z"))
 
 target_day = '&SUBSET=time("2022-08-02T00:00:00Z")'
-wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&request=GetCoverage&coverageId=eo:EO_MR_OLCI_ALGAE&format=image/tiff{}{}'".format(target_area,target_day)
+wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&request=GetCoverage&coverageId=eo:{}&format=image/tiff{}{}'".format(target_product, target_area,target_day)
 
 fetch_command = "wget {} -O {}".format(wmo_request, oper_dir+tiff_file_name)
 os.system(fetch_command)
@@ -43,9 +48,13 @@ sat_database = {}
 with rasterio.open(oper_dir+tiff_file_name) as sat_dat:
     mask = sat_dat.dataset_mask()
     algae = sat_dat.read() # for the moment, values 0-4 0 should be same as 1
-    algae[algae==0] = 1
-    algae = algae-1
-    algae = np.array(algae, dtype=float)/(algae_max_value-algae_min_value)
+    if(target_product == 'EO_MR_OLCI_ALGAE'):
+        algae[algae==0] = 1
+        algae = algae-1
+        algae = np.array(algae, dtype=float)/(algae_max_value-algae_min_value)
+    else:
+        algae = np.array(algae, dtype=float)
+            
     algae = algae.reshape(mask.shape) #this, to get rid possible extrra dimensions
     sat_database['algae'] = xr.DataArray(algae, dims = ['lat','lon'])
     sat_database['mask'] = xr.DataArray(mask, dims = ['lat','lon'])

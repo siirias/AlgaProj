@@ -5,7 +5,7 @@ import time
 import ast  # for readign configuration file
 import algae_tools as agt
 
-conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
+conf_dat = agt.conf_dat
 oper_dir = conf_dat['oper_dir']
 savefile_name = "meteor_data.nc"
 product_name = "ecmwf::forecast::surface::grid"

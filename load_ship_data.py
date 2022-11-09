@@ -8,7 +8,7 @@ import os
 import re
 import datetime as dt
 
-conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
+conf_dat = agt.conf_dat 
 oper_dir = conf_dat['oper_dir']
 rawdata_name = "ship_data.csv"
 savefile_name = "ship_data.nc"

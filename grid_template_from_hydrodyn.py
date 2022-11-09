@@ -7,7 +7,8 @@ This way the template matches the hydrodyn.
 import ast
 import numpy as np
 import xarray as xr
-conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
+import algae_tools as agt
+conf_dat = agt.conf_dat
 oper_dir = conf_dat['oper_dir']
 
 dat = xr.open_dataset(oper_dir+'hydrodyn_data.nc')

@@ -6,8 +6,9 @@
 
 {
 'oper_dir':'/mnt/c/Data/alga_test/',
-'output_di':'/mnt/c/Data/alga_test/',
-'script_dir':'/mnt/c/Data/Sorsat/Alga/AlgaProj',
+'output_dir':'/mnt/c/Data/alga_test/',
+'script_dir':'/mnt/c/Data/Sorsat/Alga/AlgaProj/',
+'config_dir':'/mnt/c/Data/Sorsat/Alga/AlgaProj/',
 'copernicus_login':'',
 'copernicus_pw':'',
 'shipdata_login':'',

@@ -1,0 +1,5 @@
+{
+'grid_template':'grid_template.nc',
+'forecast_length':72, 
+'forecast_time':'',
+}

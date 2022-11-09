@@ -14,7 +14,7 @@ This is a helper function, which just downloads and converts geotiffs
 from satellite data into jpges for easier viewing of series
 """
 
-conf_dat = ast.literal_eval("".join(open('config.txt').readlines()))
+conf_dat = agt.conf_dat
 oper_dir = conf_dat['oper_dir']
 algae_max_value = 4.0 # This depends on selected dataset.
 algae_min_value = 1.0
