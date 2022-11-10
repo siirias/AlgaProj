@@ -21,6 +21,5 @@ for file_name in agt.model_parameters['files2newgrid']:
                    oper_dir + new_file_name)
     os.system(cdo_command)
     if(agt.model_parameters['del_temp_files'] and os.path.isfile(oper_dir + new_file_name)):
-            print('should delete {}'.format(file_name))
             os.remove(oper_dir + file_name)
 

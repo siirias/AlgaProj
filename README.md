@@ -17,7 +17,7 @@ REQUIREMENTS SO FAR:
 
  - wget  for aquiring satellite
  - scp   for aquiring ship data
-
+ - cdo   for reshaping downloaded netcdf's
 channels:
  - conda-forge
  

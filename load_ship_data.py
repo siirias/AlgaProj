@@ -1,5 +1,3 @@
-import fmiopendata
-from fmiopendata.wfs import download_stored_query as fmi_dsq
 import xarray as xr
 import time
 import ast  # for readign configuration file
