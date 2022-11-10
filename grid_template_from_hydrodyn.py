@@ -15,7 +15,13 @@ dat = xr.open_dataset(oper_dir+'hydrodyn_data.nc')
 x = dat['Ocean potential temperature'].data
 x = x[0,:,:]
 land_mask = np.vectorize(lambda a: not np.isnan(a))(x)
-tmp = xr.DataArray(land_mask, dims = ['lat','lon'])
-new_set = xr.Dataset({'land_mask':tmp, 'lat':dat['lat'], 'lon':dat['lon']})
+tmp = xr.DataArray(land_mask, dims = ['lat','lon'], attrs = {'coordinates':'lat lon'})
+tmp_lat = xr.DataArray(dat['lat'])
+tmp_lon = xr.DataArray(dat['lon'])
+new_set = xr.Dataset({'land_mask':tmp, 'lat':tmp_lat, 'lon':tmp_lon},\
+        attrs = {'gridtype':'lonlat'})
+new_set.lon.attrs['units'] = 'degrees_east'
+new_set.lat.attrs['units'] = 'degrees_north'
+
 new_set.to_netcdf(oper_dir+'grid_template.nc')
 

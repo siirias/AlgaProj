@@ -63,7 +63,6 @@ def read_cmd_params():
     opts, args = getopt.getopt(sys.argv[1:],\
             "ht:l:",\
             ["help","starttime=","length="])
-    print("HERE", opts, args)
     for opt, arg in opts:
         if opt in ("-h","--help"):
             print("tbd")
@@ -137,4 +136,11 @@ def fetch_data(d_q):
 
 
     data_xr = xr.Dataset(gathered_data)
+    data_xr = add_meta_data(data_xr)
     return data_xr
+
+def add_meta_data(the_dataset):
+    # adds coordinate units.
+    the_dataset.lat.attrs['units'] = 'degrees_north'
+    the_dataset.lon.attrs['units'] = 'degrees_east'
+    return the_dataset

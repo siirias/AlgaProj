@@ -2,4 +2,9 @@
 'grid_template':'grid_template.nc',
 'forecast_length':72, 
 'forecast_time':'',
+'files2newgrid':['bgc_data.nc',\
+		 'meteor_data.nc',\
+		 'wave_data.nc',\
+		 'satellite_data.nc'],
+'del_temp_files':True
 }

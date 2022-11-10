@@ -38,7 +38,8 @@ parameters in wam
 """
 the_query={}
 
-parameters =["SigWaveHeight", "SigWavePeriod", "WaveDirection"]
+#parameters =["SigWaveHeight", "SigWavePeriod", "WaveDirection"]
+parameters =["SigWaveHeight", "WaveDirection"]
 data_xr_list = []
 for p in parameters:
     the_query = agt.format_query(product_name, [], in_parameters = [p])

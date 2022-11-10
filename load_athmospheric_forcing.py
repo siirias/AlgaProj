@@ -35,5 +35,6 @@ for p in parameters:
     data_xr_list.append(agt.fetch_data(the_query))
 
 data_xr = xr.merge(data_xr_list)
+data_xr = agt.add_meta_data(data_xr)
 data_xr.to_netcdf(oper_dir + savefile_name, 'w')
 print("Saved: {}".format(oper_dir + savefile_name))

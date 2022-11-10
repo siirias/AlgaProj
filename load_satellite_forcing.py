@@ -39,7 +39,7 @@ target_area = '&SUBSET=Lat({},{})&SUBSET=Long({},{})'.\
 target_day = '&SUBSET=time("{}")'.\
         format(dt.datetime.strftime(dt.datetime.today(), "%Y-%m-%dT00:00:00Z"))
 
-target_day = '&SUBSET=time("2022-08-02T00:00:00Z")'
+#target_day = '&SUBSET=time("2022-07-02T00:00:00Z")'
 wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&request=GetCoverage&coverageId=eo:{}&format=image/tiff{}{}'".format(target_product, target_area,target_day)
 
 fetch_command = "wget {} -O {}".format(wmo_request, oper_dir+tiff_file_name)
@@ -63,6 +63,7 @@ with rasterio.open(oper_dir+tiff_file_name) as sat_dat:
 
 
 data_xr = xr.Dataset(sat_database)
+data_xr = agt.add_meta_data(data_xr)
 data_xr.to_netcdf(oper_dir + savefile_name, 'w')
 print("Saved: {}".format(oper_dir + savefile_name))
 
