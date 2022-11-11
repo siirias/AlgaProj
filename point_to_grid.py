@@ -12,7 +12,7 @@ conf_dat = agt.conf_dat
 oper_dir = conf_dat['oper_dir']
 config_dir = conf_dat['config_dir']
 agt.read_cmd_params()
-max_iterations = 40
+max_iterations = 20
 
 cfl_ind = 'Sopcfl'
 if 'in_file' in agt.model_parameters.keys():
@@ -65,20 +65,23 @@ ag_calculated = ag_orig_l.copy() # which values are alraedy calculated
 ag_distances = np.ones((true_shape[0]*true_shape[1]))
 ag_distances[:] = np.nan  #where there is no data
 ag_distances[np.invert(np.isnan(ag_orig_l))] = 0 #actual data
-ext_step = 0
+diag_mul = 1.0/np.sqrt(2.0)
 for i in range(max_iterations):
     ag_base = np.array(ag_tmp)
     ag_u = np.roll(ag_base,-1,0)
     ag_d = np.roll(ag_base,1,0)
     ag_l = np.roll(ag_base,-1,1)
     ag_r = np.roll(ag_base,1,1)
-    ag_ul = np.roll(ag_l,-1,0)
-    ag_dl = np.roll(ag_l,1,0)
-    ag_dr = np.roll(ag_d,1,1)
-    ag_ur = np.roll(ag_u,1,1)
-    ag_tmp = np.nanmean(np.stack((ag_u, ag_d, ag_l, ag_r,\
-                                ag_ul, ag_dl, ag_dr, ag_ur)),0)
-
+    ag_ul = np.roll(ag_l,-1,0)*diag_mul
+    ag_dl = np.roll(ag_l,1,0)*diag_mul
+    ag_dr = np.roll(ag_d,1,1)*diag_mul
+    ag_ur = np.roll(ag_u,1,1)*diag_mul
+    ag_tmp = np.stack((ag_u, ag_d, ag_l, ag_r,\
+                                ag_ul, ag_dl, ag_dr, ag_ur))
+    ag_div = np.nansum(np.invert(np.isnan(np.stack((ag_u, ag_d, ag_l, ag_r)))),0) #straight multipl
+    ag_div = ag_div + diag_mul * \
+            np.nansum(np.invert(np.isnan(np.stack((ag_ul, ag_dl, ag_dr, ag_ur)))),0) #diag multipl
+    ag_tmp = np.nansum(ag_tmp,0)/ag_div
     ag_tmp = np.reshape(ag_tmp,(true_shape[0]*true_shape[1]))
     orig_filter = np.invert(np.isnan(ag_orig_l))
     ag_tmp[orig_filter] = ag_orig_l[orig_filter] # make sure to keep original
