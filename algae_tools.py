@@ -61,8 +61,9 @@ if 'grid_template' in model_parameters.keys():
 
 def read_cmd_params():
     opts, args = getopt.getopt(sys.argv[1:],\
-            "ht:l:",\
-            ["help","starttime=","length="])
+            "ht:l:p:",\
+            ["help","starttime=","length=", "infile=", "outfile=",\
+            "product="])
     for opt, arg in opts:
         if opt in ("-h","--help"):
             print("tbd")
@@ -72,6 +73,12 @@ def read_cmd_params():
                      dt.datetime.strptime(arg, '%Y-%m-%d')
         elif opt in ("-l", "--length"):
             model_parameters["forecast_length"] = int(arg)
+        elif opt in ("--infile"):
+            model_parameters["in_file"] = arg
+        elif opt in ("--outfile"):
+            model_parameters["out_file"] = arg
+        elif opt in ("-p", "--product"):
+            model_parameters["product"] = arg
 
 def format_query(in_product_name, in_product_args=[], in_parameters=[],*, no_params=False):
     grid_type = 'latlon'  #so far, no others supported

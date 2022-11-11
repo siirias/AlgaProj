@@ -11,10 +11,17 @@ import pandas as pd
 conf_dat = agt.conf_dat 
 oper_dir = conf_dat['oper_dir']
 config_dir = conf_dat['config_dir']
-
+agt.read_cmd_params()
 cfl_ind = 'Sopcfl'
-in_file_name = 'SS_20221108150730.mit'
-savefile_name = 'ship_data.nc'
+if 'in_file' in agt.model_parameters.keys():
+    in_file_name = agt.model_parameters['in_file']
+else:
+    in_file_name = 'SS_20221108150730.mit'
+if 'out_file' in agt.model_parameters.keys():
+    savefile_name = agt.model_parameters['out_file']
+else:
+    savefile_name = 'ship_data.nc'
+
 #Read the in fiel as pandas object:
 csv_dat = pd.read_csv(oper_dir + in_file_name, sep='\t', parse_dates = ['Date'])
 

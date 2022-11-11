@@ -12,10 +12,11 @@ import numpy as np
 
 conf_dat = agt.conf_dat 
 oper_dir = conf_dat['oper_dir']
+agt.read_cmd_params()
 tiff_file_name = "satellite_tmp.tiff"
-savefile_name = "satellite_data.nc"
 algae_max_value = 4.0 # This depends on selected dataset.
 algae_min_value = 1.0 # as zeroes mark masked values.
+max_download_attempts = 5  #how many times retry, if file fetch fails
 """
 Example:
 https://geoserver2.ymparisto.fi/geoserver/eo/wcs
@@ -30,20 +31,45 @@ https://geoserver2.ymparisto.fi/geoserver/eo/wcs
 ## MER_FSG_L3_rp2017_chla  a-chlorofylli, tätä vaan vuoteen 2011
 ## EO_MR_OLCI_ALGAE Pintalevätulkinta (60 m)
 #target_product = "EO_MR_OLCI_ALGAE"
-target_product = "EO_MR_OLCI_ALGAE"
+if( 'product' in agt.model_parameters.keys() and agt.model_parameters['product'] != ''):
+    target_product = agt.model_parameters['product']
+else:
+    target_product = "EO_MR_OLCI_ALGAE"
+if( 'out_file' in agt.model_parameters.keys() and agt.model_parameters['out_file'] != ''):
+    savefile_name = agt.model_parameters['out_file']
+else:
+    savefile_name = "satellite_data.nc"
+
 target_area = '&SUBSET=Lat({},{})&SUBSET=Long({},{})'.\
         format( agt.default_area.lat_min,\
                 agt.default_area.lat_max,\
                 agt.default_area.lon_min,\
                 agt.default_area.lon_max)
-target_day = '&SUBSET=time("{}")'.\
+if(agt.model_parameters["forecast_time"] != ''):
+    target_day = '&SUBSET=time("{}")'.\
+        format(dt.datetime.strftime(agt.model_parameters["forecast_time"], "%Y-%m-%dT00:00:00Z"))
+else:
+    target_day = '&SUBSET=time("{}")'.\
         format(dt.datetime.strftime(dt.datetime.today(), "%Y-%m-%dT00:00:00Z"))
 
 #target_day = '&SUBSET=time("2022-07-02T00:00:00Z")'
 wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&request=GetCoverage&coverageId=eo:{}&format=image/tiff{}{}'".format(target_product, target_area,target_day)
 
 fetch_command = "wget {} -O {}".format(wmo_request, oper_dir+tiff_file_name)
-os.system(fetch_command)
+tries = 0
+success = False
+while (tries < max_download_attempts and not success):
+    os.system(fetch_command)
+    if(os.path.isfile(oper_dir+tiff_file_name)):
+            if(os.path.getsize(oper_dir+tiff_file_name)>0):
+                success = True
+    if(not success):
+        print('retrying...')
+    tries +=1
+if(not success):
+    print("Failed to fetch satellite data")
+    exit(0)
+
 sat_database = {}
 with rasterio.open(oper_dir+tiff_file_name) as sat_dat:
     mask = sat_dat.dataset_mask()
