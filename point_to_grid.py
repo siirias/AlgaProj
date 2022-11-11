@@ -12,6 +12,8 @@ conf_dat = agt.conf_dat
 oper_dir = conf_dat['oper_dir']
 config_dir = conf_dat['config_dir']
 agt.read_cmd_params()
+max_iterations = 40
+
 cfl_ind = 'Sopcfl'
 if 'in_file' in agt.model_parameters.keys():
     in_file_name = agt.model_parameters['in_file']
@@ -51,13 +53,56 @@ algae_grid = algae_grid.where(samples_grid>0) #get rid of divide by zeros
 algae_grid = algae_grid/samples_grid
 
 #let's still try to interpolate
-algae_grid_interpolated = algae_grid.copy()
-algae_grid_interpolated.interpolate_na('lat')
-algae_grid_interpolated.interpolate_na('lon')
+# This part later to it's own piece
+# this piece uses lots of flattened arrays, as many
+# logical operations won't work on 2d arrays.
+ag_orig = np.array(algae_grid.copy())
+ag_tmp = algae_grid.copy()
+true_shape = ag_tmp.shape
+ag_orig_l = np.reshape(ag_orig,(true_shape[0]*true_shape[1]))
+land_mask_l = np.reshape(np.array(the_grid.land_mask),(true_shape[0]*true_shape[1]))
+ag_calculated = ag_orig_l.copy() # which values are alraedy calculated
+ag_distances = np.ones((true_shape[0]*true_shape[1]))
+ag_distances[:] = np.nan  #where there is no data
+ag_distances[np.invert(np.isnan(ag_orig_l))] = 0 #actual data
+ext_step = 0
+for i in range(max_iterations):
+    ag_base = np.array(ag_tmp)
+    ag_u = np.roll(ag_base,-1,0)
+    ag_d = np.roll(ag_base,1,0)
+    ag_l = np.roll(ag_base,-1,1)
+    ag_r = np.roll(ag_base,1,1)
+    ag_ul = np.roll(ag_l,-1,0)
+    ag_dl = np.roll(ag_l,1,0)
+    ag_dr = np.roll(ag_d,1,1)
+    ag_ur = np.roll(ag_u,1,1)
+    ag_tmp = np.nanmean(np.stack((ag_u, ag_d, ag_l, ag_r,\
+                                ag_ul, ag_dl, ag_dr, ag_ur)),0)
 
+    ag_tmp = np.reshape(ag_tmp,(true_shape[0]*true_shape[1]))
+    orig_filter = np.invert(np.isnan(ag_orig_l))
+    ag_tmp[orig_filter] = ag_orig_l[orig_filter] # make sure to keep original
+    ag_tmp[land_mask_l < 0.5] = np.nan  # remove points from land, to prevent propagation
+    ag_distances[np.logical_xor(np.isnan(ag_tmp), np.isnan(ag_calculated))] = i+1
+    ag_calculated = ag_tmp.copy()  #protects the already calculated values.
+    ag_tmp = np.reshape(ag_tmp, true_shape)    
+
+
+ag_distances = np.reshape(ag_distances, true_shape)    
+algae_grid_interpolated = xr.DataArray(ag_tmp, \
+        dims = ['lat', 'lon'], \
+        attrs = {'units':'g/m3'},\
+        coords={'lat':lat, 'lon':lon})
+interpolation_distances = xr.DataArray(ag_distances, \
+        dims = ['lat', 'lon'], \
+        attrs = {'units':'cell'},\
+        coords={'lat':lat, 'lon':lon})
+
+
+# end of interpolation
 database = {'lat':the_grid.lat, 'lon':the_grid.lon, \
         'algae':algae_grid, 'algae_interp':algae_grid_interpolated,\
-        'samples':samples_grid}
+        'interp_distances':interpolation_distances, 'samples':samples_grid}
 data_xr = xr.Dataset(database)
 data_xr = agt.add_meta_data(data_xr)
 data_xr.to_netcdf(oper_dir + savefile_name, 'w')
