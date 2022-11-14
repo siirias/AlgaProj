@@ -52,13 +52,10 @@ for i,lat_i, lon_i in zip(csv_dat[cfl_ind],csv_dat['Lat'],csv_dat['Lon']):
 algae_grid = algae_grid.where(samples_grid>0) #get rid of divide by zeros
 algae_grid = algae_grid/samples_grid
 
-#expand values around np.nan's to get more coverage
-[algae_grid_interpolated, interpolation_distances] = \
-        agt.fill_empty_data(algae_grid, the_grid, max_iterations, 'g/m^3')
 
 database = {'lat':the_grid.lat, 'lon':the_grid.lon, \
-        'algae':algae_grid, 'algae_interp':algae_grid_interpolated,\
-        'interp_distances':interpolation_distances, 'samples':samples_grid}
+        'algae':algae_grid, \
+        'samples':samples_grid}
 data_xr = xr.Dataset(database)
 data_xr = agt.add_meta_data(data_xr)
 data_xr.to_netcdf(oper_dir + savefile_name, 'w')

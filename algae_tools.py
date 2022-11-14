@@ -63,7 +63,7 @@ def read_cmd_params():
     opts, args = getopt.getopt(sys.argv[1:],\
             "ht:l:p:",\
             ["help","starttime=","length=", "infile=", "outfile=",\
-            "product="])
+            "product=", "debug="])
     for opt, arg in opts:
         if opt in ("-h","--help"):
             print("tbd")
@@ -79,6 +79,8 @@ def read_cmd_params():
             model_parameters["out_file"] = arg
         elif opt in ("-p", "--product"):
             model_parameters["product"] = arg
+        elif opt in ("--debug"):
+            model_parameters["debug"] = arg
 
 def format_query(in_product_name, in_product_args=[], in_parameters=[],*, no_params=False):
     grid_type = 'latlon'  #so far, no others supported

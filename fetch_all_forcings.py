@@ -12,4 +12,5 @@ os.system('python load_satellite_forcing.py')
 os.system('python load_ship_data.py')
 
 os.system('python set_grid_sizes.py')
+os.system('python combine_start_condition.py')
 

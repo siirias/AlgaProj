@@ -1,10 +1,12 @@
 {
 'grid_template':'grid_template.nc',   # file to determine axis and landmask
 'forecast_length':72,                 # how long forcings etc to get
-'forecast_time':'',                   # which day to start YYYY-MM-DD
+'forecast_time':'2022-07-05',         # which day to start YYYY-MM-DD ''=current
 'files2newgrid':['bgc_data.nc',       # which in files need re-gridding
      'meteor_data.nc',
      'wave_data.nc',
      'satellite_data.nc'],
+'files2expand':['satellite_data_regridded.nc',
+		'ship_data.nc'],       # which in files need expanding the data
 'del_temp_files':True,                # delete tmp files after conversions
 }

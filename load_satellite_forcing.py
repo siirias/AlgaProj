@@ -58,6 +58,9 @@ wmo_request = "'https://geoserver2.ymparisto.fi/geoserver/eo/wcs?version=2.0.1&r
 fetch_command = "wget {} -O {}".format(wmo_request, oper_dir+tiff_file_name)
 tries = 0
 success = False
+if('debug' in agt.model_parameters.keys()):
+    max_download_attempts = -1
+    success = True
 while (tries < max_download_attempts and not success):
     os.system(fetch_command)
     if(os.path.isfile(oper_dir+tiff_file_name)):
@@ -75,18 +78,18 @@ with rasterio.open(oper_dir+tiff_file_name) as sat_dat:
     mask = sat_dat.dataset_mask()
     algae = sat_dat.read() # for the moment, values 0-4 0 should be same as 1
     if(target_product == 'EO_MR_OLCI_ALGAE'):
-        algae[algae==0] = 1
+#        algae[algae==0] = -1 
         algae = algae-1
         algae = np.array(algae, dtype=float)/(algae_max_value-algae_min_value)
     else:
         algae = np.array(algae, dtype=float)
             
     algae = algae.reshape(mask.shape) #this, to get rid possible extrra dimensions
-    sat_database['algae'] = xr.DataArray(algae, dims = ['lat','lon'])
     sat_database['mask'] = xr.DataArray(mask, dims = ['lat','lon'])
+    sat_database['algae'] = xr.DataArray(algae, dims = ['lat','lon'])
+    sat_database['algae'] =  sat_database['algae'].where(sat_database['mask']>10)
     sat_database['lat'] = np.linspace(sat_dat.bounds.top, sat_dat.bounds.bottom, sat_dat.height)
     sat_database['lon'] = np.linspace(sat_dat.bounds.left, sat_dat.bounds.right, sat_dat.width)
-
 
 data_xr = xr.Dataset(sat_database)
 data_xr = agt.add_meta_data(data_xr)
