@@ -12,7 +12,7 @@ config_dir = conf_dat['config_dir']
 agt.read_cmd_params()
 expandable_variables = ['algae']
 start_condition_filename = 'start_condition.nc'
-distance_weight = 5 # samller means distance weight drops faster
+distance_weight = 5 # smaller means distance weight drops faster
 
 def algae_from_default(data):
     return data
@@ -52,21 +52,49 @@ for f in file_list:
     new_f = re.search('(.*)\.nc',f).groups()[0]+'_e.nc'
     dat.to_netcdf(oper_dir + new_f,'w')
 
-files_to_handle = ['satellite_data_regridded_e.nc','ship_data_e.nc']
-handlers = [algae_from_default, algae_from_ship]
+#files_to_handle = ['satellite_data_regridded_e.nc','ship_data_e.nc', 'last_state.nc']
+#handlers = [algae_from_default, algae_from_ship, algae_from_state]
+
+files_to_handle = [\
+        {'fname':'satellite_data_regridded_e.nc',\
+         'handler':algae_from_default,
+         'alg_field':'algae_expanded',
+         'weight_field':'',
+         'distance_field':'algae_exp_distance',
+         'reliability':1.0},
+
+        {'fname':'ship_data_e.nc',
+         'handler':algae_from_ship,
+         'alg_field':'algae_expanded',
+         'weight_field':'',
+         'distance_field':'algae_exp_distance',
+         'reliability':1.0},
+
+        {'fname':'last_state.nc',
+         'handler':algae_from_default,
+         'alg_field':'algae',
+         'weight_field':'reliability',
+         'distance_field':'',\
+         'reliability':0.2},
+]
 
 end_result = agt.default_area.grid
 total_value = np.zeros(end_result.land_mask.shape)
 total_weight = np.zeros(end_result.land_mask.shape)
 reliability = np.zeros(end_result.land_mask.shape)
-for f,h in zip(files_to_handle, handlers):
-    dat = xr.open_dataset(oper_dir + f).load()
-    values = np.array(h(dat['algae_expanded']))
-    distances = np.array(dat['algae_exp_distance'])
-    weight = weight_from_distance(distances)
-    total_value[np.invert(np.isnan(values))] += (weight * values)[np.invert(np.isnan(values))]
-    total_weight[np.invert(np.isnan(weight))] += weight[np.invert(np.isnan(weight))]
-    reliability[reliability<weight] = weight[reliability<weight]
+for f in files_to_handle:
+    if(os.path.isfile(oper_dir + f['fname'])):
+        dat = xr.open_dataset(oper_dir + f['fname']).load()
+        values = np.array(f['handler'](dat[f['alg_field']]))
+        if(not f['distance_field'] == ''):
+            distances = np.array(dat[f['distance_field']])
+            weight = weight_from_distance(distances)
+        else:
+            weight = np.array(dat[f['weight_field']])
+        weight = weight*f['reliability']
+        total_value[np.invert(np.isnan(values))] += (weight * values)[np.invert(np.isnan(values))]
+        total_weight[np.invert(np.isnan(weight))] += weight[np.invert(np.isnan(weight))]
+        reliability[reliability<weight] = weight[reliability<weight]
 total_value = total_value / total_weight
 
 

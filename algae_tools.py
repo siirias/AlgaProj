@@ -1,5 +1,11 @@
-import fmiopendata
-from fmiopendata.wfs import download_stored_query as fmi_dsq
+
+try:
+    no_fmiopendata = False 
+    import fmiopendata
+    from fmiopendata.wfs import download_stored_query as fmi_dsq
+except:
+    no_fmiopendata = True
+
 import ast  # for readign configuration file
 import numpy as np
 import xarray as xr
@@ -95,6 +101,8 @@ def format_query(in_product_name, in_product_args=[], in_parameters=[],*, no_par
     return query
 
 def fetch_data(d_q):
+    if(no_fmiopendata):
+        return None
     #d_q is data_query, a dictionary got from format_query().
     parameters = d_q['parameters']
     print('fetching metadata...')
