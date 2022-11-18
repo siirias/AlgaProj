@@ -1,7 +1,7 @@
 {
 'grid_template':'grid_template.nc',   # file to determine axis and landmask
 'forecast_length':72,                 # how long forcings etc to get
-'forecast_time':'2022-07-24',         # which day to start YYYY-MM-DD ''=current
+'forecast_time':'2018-06-01',         # which day to start YYYY-MM-DD ''=current
 'files2newgrid':['bgc_data.nc',       # which in files need re-gridding
      'meteor_data.nc',
      'wave_data.nc',

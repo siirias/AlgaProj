@@ -52,3 +52,5 @@ py_command = "python point_to_grid.py --infile {} --outfile {}".format(\
         remote_file, savefile_name)
 print(py_command)
 os.system(py_command)
+if(os.path.isfile(oper_dir + savefile_name) and agt.model_parameters['del_temp_files']):
+    os.remove(oper_dir + remote_file)

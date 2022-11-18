@@ -16,8 +16,8 @@ import cmocean as cmo
 #oper_dir = conf_dat['oper_dir']
 input_dir = 'C:/Data/alga_test/output/'
 output_dir = 'C:/Data/alga_test/output/figures/'
-start_date = dt.datetime.strptime('2022-06-17','%Y-%m-%d')
-end_date = dt.datetime.strptime('2022-08-22','%Y-%m-%d')
+start_date = dt.datetime.strptime('2019-06-05','%Y-%m-%d')
+end_date = dt.datetime.strptime('2019-08-30','%Y-%m-%d')
 current_date = start_date
 the_proj = ccrs.PlateCarree()
 figure_size = (10,10)
@@ -32,7 +32,7 @@ alg_max = 1.0
 plot_sat_figs = True
 plot_init_figs = True
 plot_init_reliable_figs = True
-plot_init_mosaic_figs = False
+plot_init_mosaic_figs = True
 
 def create_main_map(the_proj, fig = None, ax = None):
         if(not ax):

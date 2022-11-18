@@ -14,6 +14,10 @@ expandable_variables = ['algae']
 start_condition_filename = 'start_condition.nc'
 distance_weight = 5 # smaller means distance weight drops faster
 
+# Suppress/hide the warning for divide nan/nan
+# those occur in array dividing
+np.seterr(invalid='ignore')
+
 def algae_from_default(data):
     return data
 def algae_from_ship(data):
@@ -51,9 +55,8 @@ for f in file_list:
             dat = dat.assign({var_name:var_expanded, dist_name:var_distances})
     new_f = re.search('(.*)\.nc',f).groups()[0]+'_e.nc'
     dat.to_netcdf(oper_dir + new_f,'w')
-
-#files_to_handle = ['satellite_data_regridded_e.nc','ship_data_e.nc', 'last_state.nc']
-#handlers = [algae_from_default, algae_from_ship, algae_from_state]
+    if(agt.model_parameters['del_temp_files'] and os.path.isfile(oper_dir + new_f)):
+        os.remove(oper_dir + f)
 
 files_to_handle = [\
         {'fname':'satellite_data_regridded_e.nc',\

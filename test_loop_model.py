@@ -7,5 +7,5 @@ config_dir = conf_dat['config_dir']
 agt.read_cmd_params()
 if(os.path.isfile(oper_dir + 'last_step.txt')):
     os.remove(oper_dir + 'last_step.txt')
-for i in range(20):
+for i in range(90):
     os.system('python run_model.py')
